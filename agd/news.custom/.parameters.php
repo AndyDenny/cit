@@ -44,6 +44,7 @@ $arComponentParameters = array(
             "TYPE" => "LIST",
             "VALUES" => $arIblocksList,
             "DEFAULT" => '',
+            "REFRESH" => "Y",
         ),
         "SORTING_ORDER"  =>  Array(
             "PARENT" => "BASE",

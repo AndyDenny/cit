@@ -6,7 +6,7 @@ CJSCore::Init(array("jquery"));
 
 //
 echo "<pre>";
-var_dump($arResult);
+//var_dump($arResult);
 echo "</pre>";
 
 
@@ -114,8 +114,9 @@ endif;?>
 
 <?
 if(array_key_exists("item" , $_REQUEST)):                                     // "detail page" - one news
-    $arNewsItem = AgdNewsWrapper::getNewsItem($_REQUEST["item"]);?>
-    <?if ($arNewsItem):?>
+    $arNewsItem = new AgdNewsWrapper();
+    $arNewsItem = $arNewsItem->getNewsItem($_REQUEST["item"]);
+    if ($arNewsItem):?>
         <div class="news-item-detail">
         <?/* <div class="item-id"><i><?=$arNewsItem->getId();?></i></div> */?>
         <div class="item-name"><?=$arNewsItem->getName();?></div>
@@ -161,11 +162,9 @@ if(array_key_exists("item" , $_REQUEST)):                                     //
 
 <?
 if(array_key_exists("categ" , $_REQUEST)):
-    $arSections = new AgdNewsWrapper();
-    $arSections = $arSections->getNewsCategoriesList();
 ?>
     <div class="categories-wrapper">
-        <?foreach ($arSections as $section):?>
+        <?foreach ($arResult["CATEGORIES"] as $section):?>
             <div class="category-item">
                 <div class="item-href">
                     <a href="?categ=<?=$section["CODE"]?>"><b><?=$section["NAME"]?></b></a>

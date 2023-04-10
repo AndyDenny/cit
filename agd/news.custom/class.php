@@ -2,22 +2,22 @@
 
 \Bitrix\Main\Loader::includeModule('iblock');
 use \Bitrix\Iblock\Elements\ElementShopnewsTable;
+use \Bitrix\Iblock\ElementTable;
 
 class AgdNewsWrapper extends CBitrixComponent
 {
 
     public function getAllNewsItems(){
-        $elements = ElementShopnewsTable::getList([
-//            'select' => ['*'],
+        $elements = ElementTable::getList([
             'select' => ['ID','NAME','CODE','DATE_CREATE','IBLOCK_SECTION_ID'],
-            'filter' => ['ACTIVE' => 'Y'],
+            'filter' => ['ACTIVE' => 'Y',"IBLOCK_ID"=>intval($this->arParams['IBLOCK'])+1],
             'order' => [$this->arParams["SORTING_ORDER"] => $this->arParams["SORTING_BY"]]
         ])->fetchAll();
 
         return $elements;
     }
-    public static function getNewsItem(string $url=""){
-        $element = ElementShopnewsTable::getList([
+    public function getNewsItem(string $url=""){
+        $element = ElementTable::getList([
             'select' => ['*'],
             'filter' => ['CODE' => $url],
         ])->fetchObject();
@@ -36,29 +36,20 @@ class AgdNewsWrapper extends CBitrixComponent
     }
 
     public function getNewsCategoriesList(){
-        /**
-         * TODO
-         *
-         *  IBLOCK_ID - $arParams['IBLOCK_ID']!!
-         *
-         */
-
-        $rsSections = \CIBlockSection::GetList(
-            array(),
-            array("IBLOCK_ID"=>$this->arParams['IBLOCK'],"GLOBAL_ACTIVE"=>"Y"),
-            false,
-            array("NAME","CODE","ID")
-        )
-
-        while ($arSection = $rsSections->getNext())
-        {
-           $arSections[] = $arSection->GetFields();
-        }
+        $arSections = \Bitrix\Iblock\SectionTable::getList([
+            'select' => ["NAME","CODE","ID"],
+            'filter' => [
+                "IBLOCK_ID"=>intval($this->arParams['IBLOCK'])+1,
+                "GLOBAL_ACTIVE"=>"Y"
+            ],
+        ])->fetchAll();
         return $arSections;
     }
 
     public function executeComponent()
     {
+
+        $this->arResult['TEST'] = $this->getNewsItem();
         $this->arResult['CATEGORIES'] = $this->getNewsCategoriesList();
         $this->arResult["ALLITEMS"] = $this->getAllNewsItems();
         $this->includeComponentTemplate();
